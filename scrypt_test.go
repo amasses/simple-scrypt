@@ -63,6 +63,19 @@ func TestGenerateFromPassword(t *testing.T) {
 	}
 }
 
+func TestGenerateFromPasswordWithSalt(t *testing.T) {
+	for _, v := range testParams {
+		salt, err := GenerateRandomBytes(16)
+		if err != nil {
+			t.Fatalf("unable to generate salt for test")
+		}
+		_, err = GenerateFromPasswordWithSalt([]byte(password), salt, v.params)
+		if err != nil && v.pass == true {
+			t.Fatalf("no error was returned when expected for params: %+v", v.params)
+		}
+	}
+}
+
 func TestCompareHashAndPassword(t *testing.T) {
 	hash, err := GenerateFromPassword([]byte(password), DefaultParams)
 	if err != nil {

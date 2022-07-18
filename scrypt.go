@@ -95,6 +95,27 @@ func GenerateFromPassword(password []byte, params Params) ([]byte, error) {
 	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), nil
 }
 
+// GenerateFromPassword returns the derived key of the password using the
+// parameters provided. The parameters are prepended to the derived key and
+// separated by the "$" character (0x24).
+// If the parameters provided are less than the minimum acceptable values,
+// an error will be returned.
+func GenerateFromPasswordWithSalt(password, salt []byte, params Params) ([]byte, error) {
+	if err := params.Check(); err != nil {
+		return nil, err
+	}
+
+	// scrypt.Key returns the raw scrypt derived key.
+	dk, err := scrypt.Key(password, salt, params.N, params.R, params.P, params.DKLen)
+	if err != nil {
+		return nil, err
+	}
+
+	// Prepend the params and the salt to the derived key, each separated
+	// by a "$" character. The salt and the derived key are hex encoded.
+	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), nil
+}
+
 // CompareHashAndPassword compares a derived key with the possible cleartext
 // equivalent. The parameters used in the provided derived key are used.
 // The comparison performed by this function is constant-time. It returns nil
