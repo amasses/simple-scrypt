@@ -113,7 +113,7 @@ func GenerateFromPasswordWithSalt(password, salt []byte, params Params) ([]byte,
 
 	// Prepend the params and the salt to the derived key, each separated
 	// by a "$" character. The salt and the derived key are hex encoded.
-	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), nil
+	return []byte(fmt.Sprintf("%x$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), nil
 }
 
 // CompareHashAndPassword compares a derived key with the possible cleartext
